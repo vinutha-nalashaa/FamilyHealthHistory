@@ -1,0 +1,131 @@
+﻿<div class="FHHMainContainer">
+    <span style="font-size: large">Patient Family Health History<br />
+    </span>
+    &nbsp;<div style="text-align: left">
+        <table>
+            <tr>
+                <td>Patient Name</td>
+                <td>
+                    <input class="myclass" type="text" ng-model="patientname" /></td>
+            </tr>
+            <tr>
+                <td>
+                    <br />
+                    <button class="myButton" ng-click="GetSearchresults()">Search History</button></td>
+                <td>
+                    <br />
+                    <button ng-click='toggleModal()' class="myButton">ADD Family Details</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br />
+    <br />
+    <div>
+        <span style="font-weight: bold">Search Results</span><br />
+        <br />
+        <table id="searchresults" style="width: 100%" class="searchresclass" ng-show="testshow">
+            <tr style="border: groove">
+                <td width="22%">Person name</td>
+                <td width="22%">Person DOB</td>
+                <td width="22%">Relationship</td>
+                <td width="28%">Diagnosis details</td>
+                <td></td>
+            </tr>
+
+            <tr ng-repeat="user in users">
+                <td>
+                    <span editable-text="user.name" e-name="name" e-form="rowform" e-required>{{ user.name || 'empty' }}
+                    </span>
+                </td>
+                <td>
+                    <span editable-date="user.dob" e-name="dob" id="testdate" e-form="rowform" style="width: 125px; text-align: center" e-required>{{ user.dob || 'empty' }}
+                    </span>
+                </td>
+                <td>
+                    <span editable-select="user.relation" e-name="relation" e-form="rowform" e-ng-options="r.value as r.text for r in relations">{{ showStatus(user) }}
+                    </span>
+                </td>
+                <td style="padding-left: 95px; text-align: start">
+                    <input type="checkbox" ng-model="show" ng-class='{open:show}' />
+                    <span ng-show="!show" e-name="diagnosis" e-form="rowform" e-required>{{ user.diagnosisdetails || 'empty' }}                         
+                    </span>
+                    <table ng-repeat="m in user.members">
+                        <tr ng-show="show">
+                            <td>
+                                <span e-form="diagform">{{ m.diagnosisname }}</span>
+                            </td>
+                            <td style="width: 4%"></td>
+                            <td>
+                                <span e-form="diagform">{{ m.startdate }}</span>
+                            </td>
+                            <td style="width: 4%"></td>
+                            <td>
+                                <span e-form="diagform">{{ m.enddate }}</span>
+                            </td>
+                            <td style="white-space: nowrap">
+                                <form editable-form name="diagform" ng-show="diagform.$visible" class="form-buttons form-inline" shown="inserted == user">
+                                    <button type="submit" ng-disabled="diagform.$waiting">
+                                        <img src="../images/save.png" style="width: 14px; height: 15px" />
+                                    </button>
+                                    <button type="button" ng-disabled="diagform.$waiting" ng-click="diagform.$cancel()">
+                                        <img src="../images/cancel1.png" style="width: 20px; height: 16px; background-color: white; border: none" />
+                                    </button>
+                                </form>
+                                <!--{{ user.id}}::test-->
+                                <div class="buttons" ng-show="!diagform.$visible">
+                                    <img src="../images/edit.png" ng-click="popupedit(user.members[user.id].id,m.id)" style="width: 15px; height: 15px;" />
+                                    <img src="../images/Delete.png" ng-click="removediag(user.id,$index)" style="width: 15px; height: 15px;" />
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td style="white-space: nowrap">
+                    <form editable-form name="rowform" ng-show="rowform.$visible" class="form-buttons form-inline" shown="inserted == user">
+                        <button type="submit" ng-disabled="rowform.$waiting" class="btn btn-primary" ng-show="!show" style="background-color: white; border: none">
+                            <img src="../images/save.png" style="width: 14px; height: 15px" />
+                        </button>
+                        <button type="button" ng-disabled="rowform.$waiting" class="btn btn-primary" ng-click="rowform.$cancel()" ng-show="!show" style="background-color: white; border: none">
+                            <img src="../images/cancel1.png" style="width: 20px; height: 16px; background-color: white; border: none" />
+                        </button>
+                    </form>
+                    <div class="buttons" ng-show="!rowform.$visible">
+                        <img src="../images/edit.png" class="btn btn-primary" ng-click="rowform.$show()" ng-show="!show" style="width: 15px; height: 15px;" />&nbsp;&nbsp;&nbsp;
+                        <img src="../images/Delete.png" class="btn btn-danger" ng-click="removeUser($index)" ng-show="!show" style="width: 15px; height: 15px;" />
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+    <div>
+        <modal-dialog show='modalShown' width='390px' height='40%'>
+<div><span style="text-align:left;font-weight:bold">Add Patient Family Details</span></div>
+<table>
+<tr><td class="addmemberclass">Family Member Name</td><td><input class="myclass" type="text" ng-model="familymembername" /></td></tr>
+<tr><td class="addmemberclass">Family Member DOB</td><td><input class="myclass" type="text" ng-model="familymemberdob" datepicker/></td></tr>
+<tr><td class="addmemberclass">Relationship</td><td><div style="text-align: left" ng-repeat="row in relationships">            
+<select style="width: 120px" ng-options="sib.sibName for sib in row.siblings" ng-model="row.selectedSibling"></select>
+</td></tr>
+<tr><td class="addmemberclass">Diagnosis</td><td><input class="myclass" type="text" id="dname" ng-model="diagnosis" /></td></tr>
+<tr><td class="addmemberclass">Start Date</td><td><input class="myclass" type="text" id="diagnosisstartdate" ng-model="startdate" datepicker/></td></tr>
+<tr><td class="addmemberclass">End Date</td><td><input class="myclass" type="text" id="diagnosisenddate" ng-model="enddate" datepicker/></td></tr>
+<tr><td class="addmemberclass">Effective Date</td><td><input class="myclass" type="text" ng-model="effectivedate" datepicker/></td></tr>
+</table>
+<div><button align="center" class="myButton">ADD</button></div>
+</modal-dialog>
+    </div>
+    <div>
+        <modal-dialog show='diagnosismodal' width='700px' height='20%'>
+                <div style="border: 1px solid black;height: 88%;margin-top: 3%;">
+                    <div ng-controller="FHHController">
+                        <span>Diagnosis Name</span><input auto-complete ui-items="names" ng-model="selectedUser.members.diagnosisname" style="width: 123px"/>
+                        <span>Startdate </span><input type="date" ng-model="selectedUser.members.diagstartdate" style="width: 123px"/>
+                        <span>Enddate </span><input type="date" ng-model="selectedUser.members.diagenddate" style="width: 123px"/>
+                    </div>
+                    <div><button type="button" ng-click="SaveDiagnosis(this,selectedRowMemberId)">Save</button></div>
+                </div>            
+       </modal-dialog>
+    </div>
+</div>
